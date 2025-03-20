@@ -1,4 +1,6 @@
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddControllers();
+    
 
 builder.Services.AddCors(options =>
 {
@@ -10,7 +12,6 @@ builder.Services.AddCors(options =>
     });
 });
 
-builder.Services.AddControllers();
 
 var app = builder.Build();
 
