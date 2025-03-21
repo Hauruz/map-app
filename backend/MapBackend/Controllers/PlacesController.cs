@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -33,7 +35,12 @@ public class PlacesController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Place>> AddPlace([FromBody] Place newPlace)
     {
+        if(!ModelState.IsValid){
+        return BadRequest(ModelState);
+      }
+
         newPlace.Id = 0; 
+
         _context.Places.Add(newPlace);
         await _context.SaveChangesAsync();
 
@@ -61,6 +68,10 @@ public class PlacesController : ControllerBase
       {
         return BadRequest("ID in URl and in body of the request must match.");
       }
+
+      if(!ModelState.IsValid){
+        return BadRequest(ModelState);
+      }
       var existingPlace = await _context.Places.FindAsync(id);
       if (existingPlace == null)
       {
@@ -80,8 +91,18 @@ public class PlacesController : ControllerBase
 public class Place
 {
     public int Id { get; set; }
+
+    [Required(ErrorMessage = "Name is required.")]
+    [StringLength(100, ErrorMessage ="Name must be between 3 and 100 characters.", MinimumLength = 3) ]
     public string Name { get; set; }
+
+    [Required(ErrorMessage = "Description is required.")]
+    [StringLength(300, ErrorMessage ="Description cannot exceed 300 characters.") ]
     public string Description { get; set; }
+
+    [Range(-90, 90, ErrorMessage = "Latitude must be between -90 and 90.")]
     public double Latitude { get; set; }
+
+    [Range(-180, 180, ErrorMessage ="Longitude must be -180 and 180.")]
     public double Longitude { get; set; }
 }
