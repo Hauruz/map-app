@@ -53,6 +53,28 @@ public class PlacesController : ControllerBase
         await _context.SaveChangesAsync();
         return NoContent();
     }
+
+    [HttpPut("{id}")]
+    public async Task<ActionResult> UpdatePlace(int id, [FromBody] Place updatedPlace)
+    {
+      if (id != updatedPlace.Id )
+      {
+        return BadRequest("ID in URl and in body of the request must match.");
+      }
+      var existingPlace = await _context.Places.FindAsync(id);
+      if (existingPlace == null)
+      {
+        return NotFound();
+      }
+
+      existingPlace.Name = updatedPlace.Name;
+      existingPlace.Description = updatedPlace.Description;
+      existingPlace.Latitude = updatedPlace.Latitude;
+      existingPlace.Longitude = updatedPlace.Longitude;
+
+      await _context.SaveChangesAsync();
+      return NoContent();
+    }
 }
 
 public class Place

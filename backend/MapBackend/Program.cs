@@ -1,4 +1,12 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+
 var builder = WebApplication.CreateBuilder(args);
+var connectionString = "Data Source=places.db";
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlite(connectionString));
+
 builder.Services.AddControllers();
     
 
@@ -11,6 +19,8 @@ builder.Services.AddCors(options =>
             .AllowAnyHeader();
     });
 });
+
+
 
 
 var app = builder.Build();
