@@ -154,3 +154,17 @@
 /Users/roman/map-app/backend/MapBackend/obj/Debug/net9.0/MapBackend.pdb
 /Users/roman/map-app/backend/MapBackend/obj/Debug/net9.0/MapBackend.genruntimeconfig.cache
 /Users/roman/map-app/backend/MapBackend/obj/Debug/net9.0/ref/MapBackend.dll
+/Users/roman/map-app/backend/MapBackend/bin/Debug/net9.0/Microsoft.AspNetCore.Authentication.JwtBearer.dll
+/Users/roman/map-app/backend/MapBackend/bin/Debug/net9.0/Microsoft.AspNetCore.Cryptography.Internal.dll
+/Users/roman/map-app/backend/MapBackend/bin/Debug/net9.0/Microsoft.AspNetCore.Cryptography.KeyDerivation.dll
+/Users/roman/map-app/backend/MapBackend/bin/Debug/net9.0/Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
+/Users/roman/map-app/backend/MapBackend/bin/Debug/net9.0/Microsoft.Extensions.Identity.Core.dll
+/Users/roman/map-app/backend/MapBackend/bin/Debug/net9.0/Microsoft.Extensions.Identity.Stores.dll
+/Users/roman/map-app/backend/MapBackend/bin/Debug/net9.0/Microsoft.IdentityModel.Abstractions.dll
+/Users/roman/map-app/backend/MapBackend/bin/Debug/net9.0/Microsoft.IdentityModel.JsonWebTokens.dll
+/Users/roman/map-app/backend/MapBackend/bin/Debug/net9.0/Microsoft.IdentityModel.Logging.dll
+/Users/roman/map-app/backend/MapBackend/bin/Debug/net9.0/Microsoft.IdentityModel.Protocols.dll
+/Users/roman/map-app/backend/MapBackend/bin/Debug/net9.0/Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+/Users/roman/map-app/backend/MapBackend/bin/Debug/net9.0/Microsoft.IdentityModel.Tokens.dll
+/Users/roman/map-app/backend/MapBackend/bin/Debug/net9.0/System.IdentityModel.Tokens.Jwt.dll
+/Users/roman/map-app/backend/MapBackend/bin/Debug/net9.0/BCrypt.Net-Next.dll

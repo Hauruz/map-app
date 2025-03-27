@@ -5,7 +5,10 @@ using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Data.Common;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class PlacesController : ControllerBase
@@ -19,19 +22,36 @@ public class PlacesController : ControllerBase
       _logger = logger;
     }
 
+    
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Place>>> GetPlaces()
     {
-        return Ok(await _context.Places.ToListAsync());
+      var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+        if (userIdClaim == null)
+        {
+            return Unauthorized("User id not found in token");
+        }
+        int userId = int.Parse(userIdClaim.Value);
+        var places = await _context.Places.Where(p => p.UserId == userId).ToListAsync();
+        
+        return Ok(places);
     }
 
+    
     [HttpGet("{id}")]
     public async Task<ActionResult<Place>> GetPlace(int id)
     {
-        var place = await _context.Places.FindAsync(id);
-        if (place == null)
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+        if (userIdClaim == null)
         {
-            return NotFound();
+            return Unauthorized("User id not found in token");
+        }
+        int userId = int.Parse(userIdClaim.Value);
+        var place = await _context.Places.FirstOrDefaultAsync(p => p.Id == id && p.UserId == userId);
+
+        if(place == null)
+        {
+          return NotFound("Place not found or does not belong to this user.");
         }
         return Ok(place);
     }
@@ -45,7 +65,8 @@ public class PlacesController : ControllerBase
         }
         try
         {
-          newPlace.Id = 0; 
+          var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+          newPlace.UserId = userId;
           _context.Places.Add(newPlace);
           await _context.SaveChangesAsync();
           return CreatedAtAction(nameof(GetPlace), new { id = newPlace.Id }, newPlace);
@@ -59,6 +80,7 @@ public class PlacesController : ControllerBase
                     
     }
 
+    
     [HttpPut("{id}")]
     public async Task<ActionResult> UpdatePlace(int id, [FromBody] Place updatedPlace)
     {
@@ -68,17 +90,23 @@ public class PlacesController : ControllerBase
       }
 
       if(!ModelState.IsValid)
-      {
-        return BadRequest(ModelState);
-      }
-      try
-      {
-        var existingPlace = await _context.Places.FindAsync(id);
-        if (existingPlace == null)
         {
-          return NotFound();
+          return BadRequest(ModelState);
         }
 
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+        if(userIdClaim == null)
+        {
+          return Unauthorized("User id not found in token");
+        }
+
+        int userId = int.Parse(userIdClaim.Value);
+        var existingPlace = await _context.Places.FirstOrDefaultAsync(p => p.Id == id && p.UserId == userId);
+        
+        
+
+      try
+      {
         existingPlace.Name = updatedPlace.Name;
         existingPlace.Description = updatedPlace.Description;
         existingPlace.Latitude = updatedPlace.Latitude;
@@ -90,22 +118,31 @@ public class PlacesController : ControllerBase
       catch(DbUpdateException ex)
       {
         _logger.LogError(ex, "Error updating place to database");
-        return StatusCode(500, "An error occurred while updating the place.");
+        return StatusCode(500, $"Database error: {ex.Message}");
       }
       
     }
 
+    
     [HttpDelete("{id}")]
     public async Task<ActionResult> DeletePlace(int id)
     {
-      try
+      var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+      if(userIdClaim == null)
       {
-        var place = await _context.Places.FindAsync(id);
-        if (place == null)
+        return Unauthorized("User id not found in token.");
+      }
+
+      int userId = int.Parse(userIdClaim.Value);
+      var place = await _context.Places.FirstOrDefaultAsync(p => p.Id == id && p.UserId == userId);
+
+      if (place == null)
         {
-            return NotFound();
+            return NotFound("Place not found or does not belong to this user.");
         }
 
+      try
+      {
         _context.Places.Remove(place);
         await _context.SaveChangesAsync();
         return NoContent();
@@ -138,4 +175,6 @@ public class Place
 
     [Range(-180, 180, ErrorMessage = "Longitude must be -180 and 180.")]
     public double Longitude { get; set; }
+
+    public int UserId{get; set;}
 }
